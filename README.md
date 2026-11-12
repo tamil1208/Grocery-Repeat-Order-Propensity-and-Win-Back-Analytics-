@@ -1,128 +1,178 @@
-# Supermarket Customer Churn Analysis
+# Grocery Repeat Order Propensity & Win-Back Analytics
 
-## Introduction
+An end-to-end customer analytics project focused on understanding customer churn and retention behaviour, exploring customer lifetime patterns, and identifying opportunities for targeted win-back campaigns.
 
-This project analyzes customer data from a supermarket chain to understand factors influencing customer churn. By examining customer demographics, purchase behavior, and loyalty indicators across different branches and product categories, we aim to provide insights that can help improve customer retention strategies.
+> **Project status:** The repository currently contains exploratory data analysis and customer survival analysis notebooks built around the IBM Telco Customer Churn dataset. The grocery repeat-order and win-back framing is the intended business use case; grocery-specific transaction features and a repeat-order propensity model are not yet present in the current notebooks.
 
-Churn refers to the rate at which customers stop doing business with a company over a given period. In this supermarket analysis, churn is identified when a customer ceases to make purchases. Understanding churn is crucial as it directly impacts revenue and growth. By analyzing factors contributing to churn, such as demographics, purchasing behavior, and customer satisfaction, the supermarket can develop targeted strategies to improve retention and reduce customer attrition.
+---
 
-## Data Description
+## Project Overview
 
-The dataset contains 10,000 rows of raw customer data showing detailed information on customer transactions and characteristics, including:
+Customer retention is important for subscription businesses and grocery retailers alike. In grocery commerce, understanding when customers become inactive, which customer groups are more likely to leave, and when to re-engage them can help businesses improve repeat purchases and protect customer lifetime value.
 
-- Customer demographics (age, gender, credit score)
-- Membership status and activity
-- Transaction details (products purchased, amounts, ratings)
-- Branch information
-- Churn status
+This project explores customer-level behaviour using exploratory analysis and survival analysis. The analytical workflow provides a foundation for a future grocery-focused solution that can estimate repeat-order propensity, identify customers at risk of becoming inactive, and prioritize win-back campaigns.
 
-Key fields include:
+## Business Problem
 
-- `id`: Unique identifier for each transaction
-- `branch`: Location of the supermarket (Houston, Dallas, San Antonio)
-- `customer_type`: Type of customer (Normal/Member)
-- `product_category`: Category of products purchased
-- `total_amount`: Total amount of the transaction including tax
-- `customer_churn`: Whether the customer has churned (1) or not (0)
+A grocery business wants to improve repeat purchases and reduce customer inactivity. However, it may not know:
 
-## Tools Used
+- Which customer characteristics are associated with churn or reduced engagement?
+- How does customer tenure relate to the likelihood of remaining active?
+- Which customer segments may need earlier retention interventions?
+- How can customer behaviour analysis inform targeted win-back campaigns?
 
-- Power BI: For data visualization and dashboard creation
-- DAX (Data Analysis Expressions): For creating calculated measures and columns
+**Goal:** Use customer analytics to understand retention patterns and develop a framework for prioritizing customers for repeat-purchase and win-back initiatives.
 
-## Visualization
+## Current Repository Contents
 
-The project includes a comprehensive Power BI dashboard with two main pages:
+| File | Description |
+|---|---|
+| `Exploratory Data Analysis.ipynb` | Loads and explores customer data, reviews data quality, and performs initial churn analysis. |
+| `Customers Survival Analysis.ipynb` | Introduces survival analysis and applies Kaplan–Meier and Cox proportional hazards methods. |
+| `LICENSE` | MIT License. |
 
-1. Overview Page: Provides a high-level summary of key metrics and trends.
-2. Customer Churn Analysis Page: Offers detailed insights into churn factors and customer segments.
+## Dataset
 
-The dashboard is interactive, allowing users to filter data by various dimensions such as branch, product category, and customer type.
+The notebooks currently use the **IBM Telco Customer Churn** dataset. It contains customer-level service, tenure, billing, and churn information.
 
-[Link to Power BI Dashboard](https://app.powerbi.com/view?r=eyJrIjoiMzg3YjRmMTMtNTk1NC00ZmMwLWE3MGMtZjBmZGVlZjVmNGE3IiwidCI6ImRmODY3OWNkLWE4MGUtNDVkOC05OWFjLWM4M2VkN2ZmOTVhMCJ9&pageName=7b5c417c287e1802cdb9)
+Example fields include:
 
+| Feature | Description |
+|---|---|
+| `customerID` | Unique customer identifier |
+| `gender` | Customer gender |
+| `SeniorCitizen` | Senior-citizen indicator |
+| `Partner`, `Dependents` | Household-related attributes |
+| `tenure` | Number of months with the service |
+| `Contract` | Contract type |
+| `MonthlyCharges` | Monthly customer charges |
+| `TotalCharges` | Total charges over the customer relationship |
+| `Churn` | Whether the customer has churned |
 
-## Key Findings
+**Important:** These are telecom customer records, not grocery order histories. The current dataset does not include order dates, basket contents, product categories, order frequency, or days since last purchase. Therefore, it cannot directly calculate grocery repeat-order rates or train a valid grocery repeat-order propensity model.
 
-### Overview Page - [View Page Screenshot](https://github.com/mosesziregbe/Supermarket-Customer-Churn-Analysis/blob/main/supermarket_churn_overview.jpg)
+For a genuine grocery implementation, replace or supplement the current dataset with order-level records containing a customer ID, order ID, order date, order value, product/category details, and customer activity history.
 
-#### Churn Rate and Customer Retention
-- **Overall Churn Rate**: 20.37%, with 2,037 customers churned out of a total of 10,000.
-- **Member Retention**: 79.3% of members are retained (3,964 members), while 20.7% have churned (1,046 members).
-- **Regular Customers (Non-Members)**: 80.1% retention rate, with 3,999 retained and 991 churned.
+## Analysis Workflow
 
-#### Financial Performance
-- **Total Revenue**: $3.2 million across all branches.
-- **Total Transactions**: 10,000 transactions recorded.
-- **Total Quantity Sold**: 55,100 units sold.
-- **Average Customer Rating**: 7.0 out of 10, indicating moderate customer satisfaction.
+### 1. Data Loading and Preparation
+- Load the customer dataset using Pandas.
+- Inspect rows, columns, data types, and sample records.
+- Check missing values and data consistency.
+- Review identifiers and select relevant analytical features.
 
-#### Revenue Breakdown by Branch
-- **Dallas**: Highest revenue at $1.11 million.
-- **Houston and San Antonio**: Both branches generated $1.06 million in revenue.
+### 2. Exploratory Data Analysis
+- Examine customer and service characteristics.
+- Explore tenure, contract type, and billing patterns.
+- Compare customer attributes across churn groups.
+- Use visualizations to identify patterns and potential retention signals.
 
-#### Revenue Breakdown by Product Category
-- **Top Category**: Food and beverages generate the most revenue at $0.56 million.
-- **Second Category**: Sports and travel closely follows with $0.55 million.
-- **Other Categories**: Revenue from electronic accessories, fashion accessories, home and lifestyle, and health and beauty categories is relatively evenly distributed.
+### 3. Customer Survival Analysis
+Survival analysis helps investigate **time until an event occurs**. In this project, the event is customer churn and the observed duration is customer tenure.
 
-#### Churn Analysis by Credit Score
-- **Churn by Credit Score**: Customers with poor credit scores exhibit the highest churn rates, while those with excellent credit scores show the lowest churn rates.
+Methods included in the notebook:
+- **Kaplan–Meier estimator:** estimates the customer survival function over time.
+- **Log-rank test:** compares survival distributions between customer groups.
+- **Cox proportional hazards model:** evaluates how selected customer characteristics relate to churn hazard.
 
-#### Branch Performance Insights
-- Notably, while Dallas has the highest total revenue, it also experiences a higher churn rate in certain categories.
+The survival-analysis notebook uses the `lifelines` library.
 
-### Customer Churn Analysis Page - [View Page Screenshot](https://github.com/mosesziregbe/Supermarket-Customer-Churn-Analysis/blob/main/supermarket_churn_customer_analysis.jpg)
+### 4. Business Interpretation
+Translate observed patterns into retention questions:
+- Which customer groups show shorter observed relationships?
+- At what stages of tenure might retention outreach be useful?
+- Which customer attributes are associated with higher churn hazard?
+- What additional data is needed to design a grocery win-back strategy?
 
-#### Customer Demographics:
--**Total Customers:** 10K
--**Average Customer Age:** 39 years
--**Average Credit Score:** 651
--**Customers with Credit Card:** 71%
+## Tools and Technologies
 
-#### Gender Distribution of Churned Customers:
-Female customers show higher churn (55.9%) compared to males (44.1%)
+- **Python** – analytical programming
+- **Pandas, NumPy** – data loading and manipulation
+- **Matplotlib, Seaborn** – exploratory visualizations
+- **SciPy, Statsmodels** – statistical analysis
+- **Scikit-learn** – preprocessing utilities
+- **Lifelines** – survival analysis
+- **Jupyter Notebook** – interactive analysis environment
 
-#### Credit Card Impact on Customer Churn:
-More churned customers have a credit card (1,424) compared to those without (613)
+## Getting Started
 
-#### Age Segments Contributing Most to Revenue:
-- Mid Career (35-44) and Early Career (25-34) segments contribute the most
-- Senior (65 & Above) segment contributes the least
+### Prerequisites
 
-#### Age Segments with Highest Customer Churn Rates:
-- Late Career (55-64) has the highest churn rate at 49.83%
-- Experienced Professional (45-54) follows at 48.15%
-- Churn rate drops significantly for the Senior segment (65 and above)
+Install Python 3.9 or later, then install the required libraries:
 
-#### Product Categories Generating Most Revenue from Churned Customers:
-- Sports and Travel and Electronic Accessories categories lead
-- Food and Beverages category generates the least revenue from churned customers
+```bash
+pip install pandas numpy matplotlib seaborn scipy statsmodels scikit-learn lifelines jupyter
+```
 
-#### Customer Activity Status and Churn Across Membership Types:
-- The distribution of customers across activity and churn status is similar for both Normal and Member types
+### Clone the repository
 
-## Insights and Recommendations
+```bash
+git clone https://github.com/tamil1208/Grocery-Repeat-Order-Propensity-and-Win-Back-Analytics-.git
+cd Grocery-Repeat-Order-Propensity-and-Win-Back-Analytics-
+```
 
-**1. Female customers show a higher churn rate (55.9%) compared to males (44.1%).** Develop targeted marketing campaigns and loyalty programs tailored to female customers' preferences. Consider conducting surveys to understand their specific needs and pain points.
+### Run the notebooks
 
-**2. Customers with credit cards are more likely to churn, contrary to expectations.** Redesign credit card benefits to offer more valuable perks for frequent shoppers. Implement tiered rewards systems that increase benefits with usage, encouraging loyalty.
+```bash
+jupyter notebook
+```
 
-**3. Mid-career (35-44) and early-career (25-34) segments contribute most to revenue but have high churn rates.** Create age-specific retention programs. For mid-career customers, offer family-oriented deals. For early-career, focus on convenience and budget-friendly options.
+Open `Exploratory Data Analysis.ipynb` or `Customers Survival Analysis.ipynb` and update the dataset file path in the notebook to match your local environment.
 
-**4. Late-career (55-64) customers have the highest churn rate at 49.83%.** Develop a senior loyalty program with benefits like priority service, special shopping hours, and health-focused products/services to appeal to this demographic.
+## Proposed Grocery Analytics Extension
 
-**5. Sports and Travel and Electronic Accessories categories generate the most revenue from churned customers.** Improve customer experience in these categories through personalized recommendations, extended warranties, or exclusive access to new products. Implement a post-purchase follow-up program to ensure satisfaction.
+The following stages describe how this work can be extended into a grocery repeat-order and win-back solution. They are **planned extensions**, not completed capabilities in the current notebooks.
 
-**6. Customer activity level appears more significant in preventing churn than membership status.** Implement a multi-channel engagement strategy (e.g., app, email, in-store events) to keep customers active. Create a points system that rewards frequent visits and purchases across all categories.
+| Planned stage | Proposed analysis |
+|---|---|
+| Customer purchase behaviour | Calculate orders per customer, average order value, and purchase frequency. |
+| Recency and inactivity | Measure days since last order and define inactivity windows appropriate to the business. |
+| Repeat-order analysis | Identify customers who place another order within a defined observation period. |
+| Propensity modelling | Build a classification model using only information available before the prediction date. |
+| Customer segmentation | Group customers by recency, frequency, monetary value, and predicted risk. |
+| Win-back prioritization | Rank inactive or at-risk customers by expected responsiveness and potential value. |
+| Campaign measurement | Compare reactivation, repeat-purchase, revenue, and incremental lift across campaign and control groups. |
 
-**7. Membership status has less impact on churn than expected.** Revamp the membership program to offer clear, tangible benefits that differentiate from non-member experiences. Consider partnerships with local businesses to expand member benefits beyond the supermarket.
+### Suggested Grocery Metrics
 
-**8. Food and Beverages category generates the least revenue from churned customers.** Leverage the stability of this category by cross-selling and upselling to customers who primarily shop for groceries and suggest complementary products from higher-churn categories.
+- **Repeat Purchase Rate:** percentage of eligible customers who place another order within a defined period.
+- **Purchase Frequency:** average number of orders per customer in the selected period.
+- **Average Order Value (AOV):** total order revenue divided by number of orders.
+- **Days Since Last Order:** number of days from the analysis date to a customer's most recent order.
+- **Customer Reactivation Rate:** percentage of previously inactive customers who place a new order after a win-back campaign.
+- **Win-Back Revenue:** revenue generated by reactivated customers during the measurement window.
 
-**9. Customers with poor credit scores have higher churn rates.** Develop financial wellness programs or partnerships with financial institutions to offer credit improvement resources. This can build loyalty while addressing a key churn factor.
+Metric definitions should use consistent eligibility rules, observation windows, and customer-level or order-level grains.
 
-**10. Churn rates and performance vary across branches (Dallas, Houston, San Antonio).** Implement localized retention strategies based on each branch's specific churn patterns and customer demographics. Share best practices across branches while allowing for local customization.
+## Expected Business Value
 
-By implementing these data-driven recommendations, the supermarket chain can create a more personalized and engaging customer experience, potentially reducing churn rates and increasing overall customer lifetime value.
+A grocery-specific implementation could help a retention or product team:
 
+- Identify customers who may be less likely to order again.
+- Time personalized reminders and replenishment nudges.
+- Prioritize win-back offers for high-value inactive customers.
+- Reduce unnecessary discounts to customers likely to return organically.
+- Measure campaign performance using repeat orders and incremental revenue.
+
+These are intended business applications. No campaign lift, revenue improvement, or model-performance result is claimed by the current repository.
+
+## Future Improvements
+
+- Add a grocery transaction dataset with order-level timestamps.
+- Build customer-level RFM and repeat-order features.
+- Define a repeat-purchase target and prediction horizon.
+- Train and evaluate classification models with a time-based validation split.
+- Assess precision, recall, F1-score, ROC-AUC, PR-AUC, and calibration.
+- Use explainability methods to understand key drivers.
+- Build a Power BI or Streamlit dashboard for retention monitoring.
+- Run controlled win-back campaign experiments to measure incremental impact.
+
+## Author
+
+**Tamilarasan**
+
+- GitHub: [tamil1208](https://github.com/tamil1208)
+
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
